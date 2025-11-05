@@ -1,99 +1,84 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\View;
-use App\Models\{Comentario,Estudiante};
-
+use Inertia\Inertia;
+use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Estudiantes\EstudiantesController;
 use App\Http\Controllers\Notas\NotasController;
-use App\Http\Controllers\Auth\LoginController;
 
-/*En proceso (probablemente lo borre)
+/*
+|--------------------------------------------------------------------------
+| Página principal
+|--------------------------------------------------------------------------
+|
+| Si el usuario está autenticado, se le redirige al panel principal (Welcome).
+| Si no, se le envía al formulario de login.
+|
+*/
+
 Route::get('/', function () {
-    
-    $estudiante = new Estudiante();
-    $estudiante->nombres = 'Jose';
-    $estudiante->pri_ape = 'Sanchez';
-    $estudiante->seg_ape = 'Carrion';
-    $estudiante->save();
+    if (auth()->check()) {
+        return redirect()->route('welcome');
+    }
+    return redirect()->route('login');
+});
 
-    return $estudiante;
+/*
+|--------------------------------------------------------------------------
+| Rutas protegidas (solo para usuarios autenticados)
+|--------------------------------------------------------------------------
+*/
 
-    /*$estudiante = Estudiante::create([
-        'codigo' => '1002',
-        'nombres' => 'Edickzon',
-        'pri_ape' => 'Veramendi',
-        'seg_ape' => 'Malpartida',
-        'dni'   => '67484937',
-    ]);
+Route::middleware(['auth'])->group(function () {
 
-    $estudiante->comentarios()->create([
-        'descripcion' => 'Ud. ha cumplido con su trabajo',
-        'curso' => 'Ing. de Sofware con Met. Agiles'
-    ]);
+    // Página principal post-login (usa Inertia + Vue)
+    Route::get('/welcome', function () {
+        return Inertia::render('Welcome');
+    })->name('welcome');
 
-    return $estudiante;
+// 🔹 Grupo de rutas para estudiantes
+Route::prefix('estudiantes')->name('estudiantes.')->group(function () {
 
-    $estudiante = Estudiante::find(3);
+    // Listado principal
+    Route::get('/', [EstudiantesController::class, 'index'])->name('index');
 
-    $estudiante->comentarios()->create([
-        'descripcion' => 'Ud. tambien esta fino en Java.',
-        'curso' => 'Java Developer'
-    ]);
+    // Crear formulario
+    Route::get('/create', [EstudiantesController::class, 'create'])->name('create');
 
-    return $estudiante;
+    // Guardar nuevo estudiante (POST a /estudiantes)
+    Route::post('/', [EstudiantesController::class, 'store'])->name('store');
 
-    //$estudiante = Estudiante::get();
-    //dd($estudiante);
+    // Editar formulario
+    Route::get('/edit/{id}', [EstudiantesController::class, 'edit'])->name('edit');
 
-    //$comentario = Comentario::where('estudiante_id', 3)->get();
-    //return $comentario;
+    // Actualizar estudiante (PUT a /estudiantes/{estudiante})
+    Route::put('/{estudiante}', [EstudiantesController::class, 'update'])->name('update');
 
-    return view('welcome');
-});*/
+    // Eliminar estudiante (DELETE a /estudiantes/{estudiante})
+    Route::get('/delete/{id}', [EstudiantesController::class, 'delete'])->name('delete');
+    Route::delete('/{estudiante}', [EstudiantesController::class, 'destroy'])->name('destroy');
+});
 
-Route::get('/', [LoginController::class, 'showLoginForm']);
+    // Notas
+    Route::get('/notas/index', [NotasController::class, 'index'])->name('notas.index');
+    Route::get('/notas/simulacion', [NotasController::class, 'simulacion'])->name('notas.simulacion');
+    Route::post('/notas/simulacion', [NotasController::class, 'calcularSimulacion'])->name('notas.simulacion.calcular');
+});
 
-/*En proceso (probablemente lo borre)
+/*
+|--------------------------------------------------------------------------
+| Rutas de autenticación (login, logout)
+|--------------------------------------------------------------------------
+*/
 
-Route::get('/saludos', function() {
-    return 'Hola amiguitos!';
-})->name('saluditos');
-
-Route::get('/bienvenidos', function() {
-    return view('bienvenidos');
-})->name('bienvenidos');
-
-Route::get('/estudiantes', function() {
-    return View::make('estudiantes');
-})->name('estudiantes');*/
-
-// Rutas de estudiante (por ahora esta en profesor)
-Route::get('/estudiantes/index', [EstudiantesController::class, 'index'])->name('estudiantes.index');
-Route::get('/estudiantes/create', [EstudiantesController::class, 'create'])->name('estudiantes.create');
-Route::post('/estudiantes/store', [EstudiantesController::class, 'store'])->name('estudiantes.store');
-Route::get('/estudiantes/edit/{id}', [EstudiantesController::class, 'edit'])->name('estudiantes.edit');
-Route::post('/estudiantes/update/{estudiante}', [EstudiantesController::class, 'update'])->name('estudiantes.update');
-/*En proceso (probablemente lo borre)
-Route::get('/estudiantes/delete/{id}', [EstudiantesController::class, 'delete'])->name('estudiantes.delete');*/
-Route::post('/estudiantes/destroy/{estudiante}', [EstudiantesController::class, 'destroy'])->name('estudiantes.destroy');
-
-// Ruta nota, el profesor podra observar las notas del estudiante 
-Route::get('/notas/index', [NotasController::class, 'index'])->name('notas.index');
-
-// Rutas de autenticación 
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login'])->name('login.submit');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
-// Ruta Welcome para el profesor
-Route::get('/welcome', function () {
-    return view('welcome'); 
-})->middleware('auth')->name('welcome');
+/*
+|--------------------------------------------------------------------------
+| Carga del sistema de autenticación predeterminado
+|--------------------------------------------------------------------------
+*/
 
-
-// Mostrar formulario de simulación
-Route::get('/notas/simulacion', [NotasController::class, 'simulacion'])->name('notas.simulacion');
-
-// Procesar formulario y calcular promedio
-Route::post('/notas/simulacion', [NotasController::class, 'calcularSimulacion'])->name('notas.simulacion.calcular');
+require __DIR__ . '/auth.php';

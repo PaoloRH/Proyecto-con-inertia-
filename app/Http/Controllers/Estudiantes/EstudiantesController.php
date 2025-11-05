@@ -4,55 +4,87 @@ namespace App\Http\Controllers\Estudiantes;
 
 use App\Models\Estudiante;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\{Redirect,View};
 use Illuminate\Http\Request;
+use Inertia\Inertia;
+use Illuminate\Support\Facades\Redirect;
 
 class EstudiantesController extends Controller
 {
-    public function index(Request $request) {
-
+    // 📄 Listar estudiantes
+    public function index()
+    {
         $estudiantes = Estudiante::orderBy('id', 'DESC')->get();
 
-        return view('estudiantes.index', compact('estudiantes'));
+        return Inertia::render('Estudiantes/Index', [
+            'estudiantes' => $estudiantes
+        ]);
     }
 
-    public function create() {
-
-        return View::make('estudiantes.create');
+    // 🧾 Formulario de creación
+    public function create()
+    {
+        return Inertia::render('Estudiantes/Create');
     }
 
-    public function store(Request $request) {
+    // 💾 Guardar nuevo estudiante
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'codigo' => 'required|string|max:20',
+            'nombres' => 'required|string|max:100',
+            'pri_ape' => 'required|string|max:50',
+            'seg_ape' => 'nullable|string|max:50',
+            'dni' => 'required|string|max:20',
+            'carrera' => 'required|string|max:100',
+        ]);
 
-        $estudiante = Estudiante::create($request->all());
+        Estudiante::create($validated);
 
-        return Redirect::to('/estudiantes/index');
+        return Redirect::route('estudiantes.index')->with('success', 'Estudiante creado correctamente');
     }
 
-    public function edit($id) {
+    // ✏️ Editar estudiante
+    public function edit($id)
+    {
+        $estudiante = Estudiante::findOrFail($id);
 
-        $estudiante = Estudiante::find($id);
-
-        return View::make('estudiantes.edit', compact('estudiante'));
+        return Inertia::render('Estudiantes/Edit', [
+            'estudiante' => $estudiante
+        ]);
     }
 
-    public function update(Request $request, Estudiante $estudiante) {
+    // 🔄 Actualizar estudiante
+    public function update(Request $request, Estudiante $estudiante)
+    {
+        $validated = $request->validate([
+            'codigo' => 'required|string|max:20',
+            'nombres' => 'required|string|max:100',
+            'pri_ape' => 'required|string|max:50',
+            'seg_ape' => 'nullable|string|max:50',
+            'dni' => 'required|string|max:20',
+            'carrera' => 'required|string|max:100',
+        ]);
 
-        $estudiante->update($request->all());
+        $estudiante->update($validated);
 
-        return Redirect::to('/estudiantes/index');
+        return Redirect::route('estudiantes.index')->with('success', 'Estudiante actualizado correctamente');
     }
 
-    public function delete($id) {
+    // 🗑️ Confirmación de eliminación
+    public function delete($id)
+    {
+        $estudiante = Estudiante::findOrFail($id);
 
-        $estudiante = Estudiante::find($id);
-
-        return View::make('estudiantes.delete', compact('estudiante'));
+        return Inertia::render('Estudiantes/Delete', [
+            'estudiante' => $estudiante
+        ]);
     }
 
-    public function destroy(Estudiante $estudiante) {
-
+    // ❌ Eliminar estudiante
+    public function destroy(Estudiante $estudiante)
+    {
         $estudiante->delete();
 
-        return Redirect::to('/estudiantes/index');
+        return Redirect::route('estudiantes.index')->with('success', 'Estudiante eliminado correctamente');
     }
 }

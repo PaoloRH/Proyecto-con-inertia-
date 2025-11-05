@@ -27,10 +27,15 @@
       100% { background-position: 0% 50%; }
     }
 
-    /* Efecto glow */
     .hover-glow:hover {
       box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
       transform: translateY(-2px);
+    }
+
+    /* Animación del modal */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
     }
   </style>
 </head>
@@ -40,23 +45,28 @@
   <!-- Contenedor principal -->
   <div class="bg-white/10 backdrop-blur-xl rounded-3xl shadow-2xl p-8 w-[95%] md:w-[90%] max-w-5xl border border-white/20 transition-all duration-300">
       
-      <!-- Título -->
       <h1 class="text-4xl font-extrabold text-center mb-8 drop-shadow-lg">
           🎓 Lista de <span class="text-violet-400">Estudiantes</span>
       </h1>
 
-      <!-- Botón Crear nuevo -->
-      <div class="flex justify-end mb-6">
+      <!-- Botones superiores -->
+      <div class="flex flex-wrap justify-between items-center mb-6 gap-3">
           <a href="{{ route('estudiantes.create') }}" 
               class="inline-flex items-center bg-gradient-to-r from-violet-600 to-indigo-500 hover:from-indigo-500 hover:to-violet-600 text-white font-semibold py-2 px-5 rounded-lg shadow-md transition duration-300 transform hover:-translate-y-1 hover-glow"
-              title="Crear un nuevo estudiante"
-              role="button">
-              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" 
-                   xmlns="http://www.w3.org/2000/svg">
+              title="Crear un nuevo estudiante">
+              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
                         d="M12 4v16m8-8H4"></path>
               </svg>
               Nuevo
+          </a>
+
+          <a href="{{ route('notas.simulacion') }}" 
+             class="inline-flex items-center bg-gradient-to-r from-green-500 to-teal-500 
+                    hover:from-teal-500 hover:to-green-500 text-white font-semibold py-2 px-4 
+                    rounded-lg shadow-md transition duration-300 hover:-translate-y-1 hover-glow"
+             title="Simular Promedio">
+              🧮 Simular Promedio
           </a>
       </div>
 
@@ -71,7 +81,7 @@
                       <th class="p-4">Segundo Apellido</th>
                       <th class="p-4">DNI</th>
                       <th class="p-4">Carrera</th>
-                      <th class="p-4 rounded-tr-xl">Ver</th>
+                      <th class="p-4 rounded-tr-xl text-center">Ver</th>
                   </tr>
               </thead>
               <tbody>
@@ -95,32 +105,28 @@
           </table>
       </div>
 
-      <!-- Botón volver -->
       <div class="flex justify-center mt-8">
           <a href="{{ url('/') }}" 
               class="inline-flex items-center bg-gradient-to-r from-violet-600 to-indigo-500 hover:from-indigo-500 hover:to-violet-600 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition duration-300 transform hover:-translate-y-1 hover-glow"
-              title="Volver al menú"
-              role="button">
+              title="Volver al menú">
               🔙 Menú
           </a>
       </div>
 
-      <div class="flex justify-end mb-4">
-    <a href="{{ route('notas.simulacion') }}" 
-       class="inline-flex items-center bg-gradient-to-r from-green-500 to-teal-500 
-              hover:from-teal-500 hover:to-green-500 text-white font-semibold py-2 px-4 
-              rounded-lg shadow-md transition duration-300 hover:-translate-y-1 hover-glow"
-       title="Simular Promedio">
-        🧮 Simular Promedio
-    </a>
-</div>
-
-
-      <!-- Pie -->
       <p class="text-center text-sm text-white/60 mt-6">
           © {{ date('Y') }} Gestor de Notas — Estudiantes
       </p>
   </div>
+
+  <!-- Modal de aprobado -->
+  @if(isset($estado) && str_contains($estado, 'APROBADO'))
+  <div class="fixed inset-0 flex items-center justify-center bg-black/60 z-50 animate-fadeIn">
+      <div class="bg-gradient-to-r from-green-500 to-emerald-600 text-white text-center py-8 px-12 rounded-2xl shadow-2xl transform scale-105">
+          <h2 class="text-4xl font-extrabold mb-2 drop-shadow-lg">🎉 ¡APROBADO!</h2>
+          <p class="text-lg text-white/90">Felicidades, tu esfuerzo dio resultado 💪</p>
+      </div>
+  </div>
+  @endif
 
 </body>
 </html>
