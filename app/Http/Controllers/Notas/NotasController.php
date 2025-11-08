@@ -11,14 +11,17 @@ class NotasController extends Controller
     /**
      * Muestra la lista de notas simuladas.
      */
-    public function index()
-    {
-        $simulaciones = session()->get('simulaciones', []);
+  public function index()
+{
+    $simulaciones = session()->get('simulaciones', []);
 
-        return Inertia::render('Notas/Index', [
-            'notas' => $simulaciones,
-        ]);
-    }
+    // Tomar solo las últimas 10 simulaciones
+    $ultimasSimulaciones = array_slice($simulaciones, -10);
+
+    return Inertia::render('Notas/Index', [
+        'notas' => $ultimasSimulaciones,
+    ]);
+}
 
     /**
      * Muestra el formulario de simulación.

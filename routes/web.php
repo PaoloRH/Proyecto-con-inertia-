@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Estudiantes\EstudiantesController;
 use App\Http\Controllers\Notas\NotasController;
 use App\Http\Controllers\WelcomeController;
+use App\Http\Controllers\ReportePdfController;
 
 /*
 |--------------------------------------------------------------------------
@@ -69,3 +70,6 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 */
 
 require __DIR__ . '/auth.php';
+
+// Ruta para generar PDF
+Route::get('/pdf/estudiantes', [ReportePdfController::class, 'estudiantes'])->name('pdf.estudiantes');

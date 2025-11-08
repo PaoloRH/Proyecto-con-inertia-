@@ -26,6 +26,16 @@ const logout = () => {
         🎓 Listado de Estudiantes
       </h1>
 
+      <!-- 📄 Exportar PDF -->
+<a
+  href="/pdf/estudiantes"
+  target="_blank"
+  class="bg-gradient-to-r from-green-600 to-emerald-500 hover:from-emerald-500 hover:to-green-600 text-white font-semibold px-5 py-2 rounded-xl shadow-md hover:shadow-green-400/40 transition-all duration-200 flex items-center gap-2"
+>
+  🧾 Exportar PDF
+</a>
+
+
       <div class="flex items-center gap-3">
         <!-- Enlace a Notas -->
         <Link

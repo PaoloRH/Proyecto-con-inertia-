@@ -88,6 +88,8 @@ const logout = () => {
           </a>
         </div>
 
+        
+
         <!-- Lista de últimos 10 usuarios -->
         <div class="mt-10 bg-white/10 rounded-2xl p-6 shadow-lg border border-white/10">
           <h3 class="text-xl font-bold mb-4 text-yellow-300">👥 Últimos usuarios registrados</h3>
